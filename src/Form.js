@@ -35,8 +35,9 @@ export const Form = () => {
           return "";
         },
       });
+      const queryData = `firstName=${firstName}&lastName=${lastName}&email=${email}`;
 
-      const dataResponse = await fetch(`http://192.168.1.157:5000/api/data?firstName=${firstName}&lastName=${lastName}&email=${email}`)
+      const dataResponse = await fetch(`http://192.168.1.157:5000/api/data?${queryData}`)
 
       const data = await dataResponse.json();
       console.log(data);
