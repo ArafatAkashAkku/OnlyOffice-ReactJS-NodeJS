@@ -1,0 +1,46 @@
+{
+  "name": "Insert Data",
+  "nameLocale": {
+    "en": "Insert Data"
+  },
+  "guid": "asc.{insert-data-plugin-guid}",
+  "version": "1.0.0",
+  "variations": [
+    {
+      "description": "Insert data fields into document",
+      "descriptionLocale": {
+        "en": "Insert data fields into document"
+      },
+      "url": "index.html",
+      "icons": ["resources/icon.svg", "resources/icon.svg"],
+      "icons2": [
+        {
+          "style": "light",
+          "100%": { "normal": "resources/icon.svg" },
+          "125%": { "normal": "resources/icon.svg" },
+          "150%": { "normal": "resources/icon.svg" },
+          "175%": { "normal": "resources/icon.svg" },
+          "200%": { "normal": "resources/icon.svg" }
+        },
+        {
+          "style": "dark",
+          "100%": { "normal": "resources/icon.svg" },
+          "125%": { "normal": "resources/icon.svg" },
+          "150%": { "normal": "resources/icon.svg" },
+          "175%": { "normal": "resources/icon.svg" },
+          "200%": { "normal": "resources/icon.svg" }
+        }
+      ],
+      "isViewer": false,
+      "EditorsSupport": ["word"],
+      "isVisual": true,
+      "isModal": false,
+      "isInsideMode": true,
+      "initDataType": "none",
+      "initData": "",
+      "isUpdateOleOnResize": false,
+      "buttons": []
+    }
+  ]
+}
+

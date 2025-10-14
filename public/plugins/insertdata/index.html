@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insert Data Plugin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            padding: 16px;
+            background: #fff;
+            color: #333;
+            font-size: 13px;
+        }
+        
+        h3 {
+            margin-bottom: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .error {
+            padding: 12px;
+            background: #fee;
+            border: 1px solid #fcc;
+            border-radius: 4px;
+            color: #c33;
+            margin-bottom: 12px;
+        }
+        
+        .data-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .data-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            background: #f8f9fa;
+            border: 1px solid #e1e4e8;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .data-item:hover {
+            background: #e8f4ff;
+            border-color: #0969da;
+            transform: translateX(2px);
+        }
+        
+        .data-item:active {
+            transform: translateX(1px);
+            background: #d0e8ff;
+        }
+        
+        .data-label {
+            font-weight: 500;
+            color: #666;
+            min-width: 90px;
+            margin-right: 8px;
+        }
+        
+        .data-value {
+            color: #0969da;
+            font-weight: 500;
+            flex: 1;
+        }
+        
+        .insert-icon {
+            margin-left: auto;
+            opacity: 0.6;
+            font-size: 16px;
+        }
+        
+        .data-item:hover .insert-icon {
+            opacity: 1;
+        }
+
+    </style>
+    <script src="https://onlyoffice.github.io/sdkjs-plugins/v1/plugins.js"></script>
+</head>
+<body>
+    <h3>📋 Insert Data Fields</h3>
+    <div id="content">
+        <div class="loading">Loading data...</div>
+    </div>
+
+    <script>
+        (function(window, undefined) {
+            let userData = null;
+
+            // Initialize plugin
+            window.Asc.plugin.init = function() {
+                console.log('Plugin initialized');
+                loadUserData();
+            };
+
+            // Fetch user data from API
+            async function loadUserData() {
+                const contentDiv = document.getElementById('content');
+                try {
+                    const response = await fetch('http://192.168.1.157:5000/api/data');
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch data');
+                    }
+                    userData = await response.json();
+                    console.log('User data loaded:', userData);
+                    renderData();
+                } catch (error) {
+                    console.error('Error loading data:', error);
+                    contentDiv.innerHTML = '<div class="error">Failed to load data. Please try again.</div>';
+                }
+            }
+
+            // Render data items
+            function renderData() {
+                const contentDiv = document.getElementById('content');
+                if (!userData) {
+                    contentDiv.innerHTML = '<div class="error">No data available</div>';
+                    return;
+                }
+
+                const container = document.createElement('div');
+                container.className = 'data-container';
+
+                // Create clickable items for each field
+                for (const [key, value] of Object.entries(userData)) {
+                    const item = document.createElement('div');
+                    item.className = 'data-item';
+                    
+                    // Determine what to insert based on value
+                    const isNull = value === null || value === undefined || value === '';
+                    const textToInsert = isNull ? `{{${key}}}` : value;
+                    
+                    item.onclick = () => insertText(textToInsert);
+                    
+                    const label = document.createElement('span');
+                    label.className = 'data-label';
+                    label.textContent = formatLabel(key) + ':';
+                    
+                    const valueSpan = document.createElement('span');
+                    valueSpan.className = 'data-value';
+                    valueSpan.textContent = isNull ? `{{${key}}}` : value;
+                    valueSpan.style.color = isNull ? '#999' : '#0969da';
+                    valueSpan.style.fontStyle = isNull ? 'italic' : 'normal';
+                    
+                    const icon = document.createElement('span');
+                    icon.className = 'insert-icon';
+                    icon.textContent = '→';
+                    
+                    item.appendChild(label);
+                    item.appendChild(valueSpan);
+                    item.appendChild(icon);
+                    container.appendChild(item);
+                }
+
+                contentDiv.innerHTML = '';
+                contentDiv.appendChild(container);
+                
+                // Replace placeholders with actual values for non-null fields
+                replacePlaceholders();
+            }
+
+            // Format field names for display
+            function formatLabel(key) {
+                return key
+                    .replace(/([A-Z])/g, ' $1')
+                    .replace(/^./, str => str.toUpperCase())
+                    .trim();
+            }
+
+            // Insert text at cursor position
+            function insertText(text) {
+                console.log('Inserting text:', text);
+                
+                // Use the OnlyOffice plugin API to insert text at cursor
+                window.Asc.plugin.executeMethod('PasteText', [text]);
+                
+                // Optional: Show feedback
+                console.log('Text inserted successfully');
+            }
+
+            // Replace placeholders in the document with actual values
+            function replacePlaceholders() {
+                if (!userData) return;
+                
+                console.log('Replacing placeholders with actual values...');
+                
+                // For each field in userData that has a non-null value
+                for (const [key, value] of Object.entries(userData)) {
+                    if (value !== null && value !== undefined) {
+                        const placeholder = `{{${key}}}`;
+                        console.log(`Searching for placeholder: ${placeholder}`);
+                        
+                        // Use Search and Replace API
+                        window.Asc.plugin.executeMethod('SearchAndReplace', [
+                            {
+                                searchString: placeholder,
+                                replaceString: String(value),
+                                matchCase: true
+                            }
+                        ]);
+                    }
+                }
+                
+                console.log('Placeholder replacement complete');
+            }
+
+            // Plugin button handler (if needed)
+            window.Asc.plugin.button = function(id) {
+                this.executeCommand('close', '');
+            };
+
+        })(window, undefined);
+    </script>
+</body>
+</html>
+
