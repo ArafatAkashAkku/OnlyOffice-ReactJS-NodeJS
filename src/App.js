@@ -1,11 +1,21 @@
 import { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link, useSearchParams } from "react-router-dom";
 import { DocumentEditor } from "@onlyoffice/document-editor-react";
 import { Form } from "./Form";
 import "./App.css";
 
 function EditorPage() {
   const [token, setToken] = useState("");
+  const [searchParams] = useSearchParams();
+  // Store query parameters in sessionStorage for the plugin to access
+  useEffect(() => {
+    const queryParams = {};
+    for (let [key, value] of searchParams.entries()) {
+      queryParams[key] = value;
+    }
+    sessionStorage.setItem('editorQueryParams', JSON.stringify(queryParams));
+    console.log('Stored query params:', queryParams);
+  }, [searchParams]);
 
   useEffect(() => {
     fetch(`http://192.168.1.157:5000/api/token`) // api server
@@ -85,7 +95,7 @@ function HomePage() {
     <div style={{ padding: "2rem", fontFamily: "system-ui" }}>
       <h1>Document Management System</h1>
       <div style={{ display: "flex", gap: "1rem", marginTop: "2rem" }}>
-        <Link to="/editor" style={{
+        <Link to="/editor?firstName=&lastName=&email=" style={{
           padding: "12px 24px",
           backgroundColor: "#0066cc",
           color: "white",

@@ -115,7 +115,27 @@
             async function loadUserData() {
                 const contentDiv = document.getElementById('content');
                 try {
-                    const response = await fetch('http://192.168.1.157:5000/api/data');
+                    // Read query parameters from sessionStorage
+                    let queryParams = {};
+                    try {
+                        const storedParams = sessionStorage.getItem('editorQueryParams');
+                        if (storedParams) {
+                            queryParams = JSON.parse(storedParams);
+                            console.log('Retrieved query params from sessionStorage:', queryParams);
+                        }
+                    } catch (e) {
+                        console.error('Error reading sessionStorage:', e);
+                    }
+
+                    // Build query string
+                    const queryString = new URLSearchParams(queryParams).toString();
+                    const apiUrl = queryString 
+                        ? `http://192.168.1.157:5000/api/data?${queryString}`
+                        : 'http://192.168.1.157:5000/api/data';
+                    
+                    console.log('Calling API with URL:', apiUrl);
+                    
+                    const response = await fetch(apiUrl);
                     if (!response.ok) {
                         throw new Error('Failed to fetch data');
                     }
