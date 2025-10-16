@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import Docxtemplater from 'docxtemplater';
 import PizZip from 'pizzip';
 import { saveAs } from 'file-saver';
-import expressionParser from 'docxtemplater/expressions';
 
 export const Form = () => {
   const [loading, setLoading] = useState(false);
@@ -26,7 +25,6 @@ export const Form = () => {
       const doc = new Docxtemplater(zip, {
         paragraphLoop: true,
         linebreaks: true,
-        parser: expressionParser,
         delimiters: {
           start: '{{',
           end: '}}'
@@ -36,11 +34,50 @@ export const Form = () => {
         },
       });
       const queryData = `firstName=${firstName}&lastName=${lastName}&email=${email}`;
+      // const queryData = `firstName=firstName&Firstname=Firstname&firstname=firstname&FirstName=FirstName&first-name=first-name&First-Name=First-Name&first-Name=first-Name&First-name=First-name`;
 
       const dataResponse = await fetch(`http://192.168.1.157:5000/api/data?${queryData}`)
 
-      const data = await dataResponse.json();
-      console.log(data);
+      const rawData = await dataResponse.json();
+      console.log(rawData);
+      
+      // Support all naming conventions for each field
+      const data = {};
+      Object.keys(rawData).forEach(key => {
+        const value = rawData[key];
+        const lowerKey = key.toLowerCase();
+        
+        // Add all variations
+        data[lowerKey] = value;                           // firstname
+        data[key] = value;                                 // firstName (original)
+        data[key.charAt(0).toUpperCase() + key.slice(1)] = value;  // FirstName
+        data[lowerKey.charAt(0).toUpperCase() + lowerKey.slice(1)] = value; // Firstname
+        
+        // Add hyphenated versions
+        const hyphenated = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+        data[hyphenated] = value;                          // first-name
+        data[hyphenated.charAt(0).toUpperCase() + hyphenated.slice(1)] = value; // First-name
+        data[hyphenated.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('-')] = value; // First-Name
+        
+        // Handle first-Name pattern
+        const parts = hyphenated.split('-');
+        if (parts.length > 1) {
+          data[parts[0] + '-' + parts[1].charAt(0).toUpperCase() + parts[1].slice(1)] = value; // first-Name
+        }
+        
+        // Add underscore versions
+        const underscored = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+        data[underscored] = value;                         // first_name
+        data[underscored.toUpperCase()] = value;           // FIRST_NAME
+        data[underscored.charAt(0).toUpperCase() + underscored.slice(1)] = value; // First_name
+        data[underscored.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join('_')] = value; // First_Name
+        
+        // Handle first_Name pattern
+        const uParts = underscored.split('_');
+        if (uParts.length > 1) {
+          data[uParts[0] + '_' + uParts[1].charAt(0).toUpperCase() + uParts[1].slice(1)] = value; // first_Name
+        }
+      });
       
       doc.render(data);
       console.log(doc);

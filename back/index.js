@@ -69,7 +69,7 @@ app.get('/api/token', (req, res) => {
 app.get('/api/template', async (req, res) => {
   try {
     // Remote .docx file URL (from S3, GitHub, etc.)
-    const fileUrl = 'http://192.168.1.157:3000/assets/output.docx';
+    const fileUrl = 'http://192.168.1.157:3000/assets/template3.docx';
 
     // Fetch the file from the URL
     const response = await fetch(fileUrl);
