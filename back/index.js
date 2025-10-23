@@ -32,7 +32,7 @@ app.get('/api/token', (req, res) => {
     },
     editorConfig: {
         mode: 'edit',
-        // callbackUrl: "http://192.168.1.157:3000/api/save",
+        // callbackUrl: "http://192.168.1.162:3000/api/save",
         user: {
           id: "78e1e841",
           name: "Sigmative",
@@ -56,7 +56,7 @@ app.get('/api/token', (req, res) => {
         plugins: {
           autostart: ["asc.{insert-data-plugin-guid}"],
           pluginsData: [
-            "http://192.168.1.157:3000/plugins/insertdata/config.json"
+            "http://192.168.1.162:3000/plugins/insertdata/config.json"
           ]
         },
     },
@@ -69,7 +69,7 @@ app.get('/api/token', (req, res) => {
 app.get('/api/template', async (req, res) => {
   try {
     // Remote .docx file URL (from S3, GitHub, etc.)
-    const fileUrl = 'http://192.168.1.157:3000/assets/template3.docx';
+    const fileUrl = 'http://192.168.1.162:3000/assets/template3.docx';
 
     // Fetch the file from the URL
     const response = await fetch(fileUrl);

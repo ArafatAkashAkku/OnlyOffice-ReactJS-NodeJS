@@ -14,7 +14,7 @@ export const Form = () => {
       setLoading(true);
 
       // 1️⃣ Fetch the .docx file (template) from your API
-      const fileResponse = await fetch('http://192.168.1.157:5000/api/template'); // <-- your backend endpoint
+      const fileResponse = await fetch('http://192.168.1.162:5000/api/template'); // <-- your backend endpoint
       const fileArrayBuffer = await fileResponse.arrayBuffer();
       console.log(fileResponse);
 
@@ -36,7 +36,7 @@ export const Form = () => {
       const queryData = `firstName=${firstName}&lastName=${lastName}&email=${email}`;
       // const queryData = `firstName=firstName&Firstname=Firstname&firstname=firstname&FirstName=FirstName&first-name=first-name&First-Name=First-Name&first-Name=first-Name&First-name=First-name`;
 
-      const dataResponse = await fetch(`http://192.168.1.157:5000/api/data?${queryData}`)
+      const dataResponse = await fetch(`http://192.168.1.162:5000/api/data?${queryData}`)
 
       const rawData = await dataResponse.json();
       console.log(rawData);

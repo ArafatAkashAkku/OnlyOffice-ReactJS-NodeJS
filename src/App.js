@@ -18,7 +18,7 @@ function EditorPage() {
   }, [searchParams]);
 
   useEffect(() => {
-    fetch(`http://192.168.1.157:5000/api/token`) // api server
+    fetch(`http://192.168.1.162:5000/api/token`) // api server
       .then(res => res.json())
       .then(data => setToken(data.token))
       .catch(err => console.log(err));
@@ -28,7 +28,7 @@ function EditorPage() {
     <div style={{ height: "100vh" }}>
       <DocumentEditor
         id="docxEditor"
-        documentServerUrl="http://192.168.1.157:8082/"
+        documentServerUrl="http://192.168.1.162:8082/"
 
         config={{
           token, // added later
@@ -54,7 +54,7 @@ function EditorPage() {
           },
           editorConfig: {
             mode: 'edit',
-            // callbackUrl: "http://192.168.1.157:3000/api/save",
+            // callbackUrl: "http://192.168.1.162:3000/api/save",
             user: {
               id: "78e1e841",
               name: "Sigmative",
@@ -78,7 +78,7 @@ function EditorPage() {
             plugins: {
               autostart: ["asc.{insert-data-plugin-guid}"],
               pluginsData: [
-                `http://192.168.1.157:3000/plugins/insertdata/config.json`
+                `http://192.168.1.162:3000/plugins/insertdata/config.json`
               ]
             },
           },
@@ -114,6 +114,16 @@ function HomePage() {
           fontWeight: "500"
         }}>
           Go to Form
+        </Link>
+        <Link to="/editor?firstName=John&lastName=Doe&email=john.doe@example.com" style={{
+          padding: "12px 24px",
+          backgroundColor: "#0066cc",
+          color: "white",
+          textDecoration: "none",
+          borderRadius: "6px",
+          fontWeight: "500"
+        }}>
+          Go to Editor with query params
         </Link>
       </div>
     </div>
